@@ -12,9 +12,9 @@
   "author": "",
   "license": "ISC",
   "peerDependencies": {
+    "@mui/material": "^5.3.1",
     "react": "^16.8.0",
-    "react-dom": "^16.8.0",
-    "@mui/material": "^5.3.1"
+    "react-dom": "^16.8.0"
   },
   "devDependencies": {
     "@mui/material": "^5.3.1",
@@ -27,6 +27,7 @@
     "rollup": "^2.66.1",
     "rollup-plugin-sass": "^1.2.10",
     "rollup-plugin-typescript2": "^0.31.1",
+    "tslib": "^2.3.1",
     "typescript": "^4.5.5"
   },
   "files": [

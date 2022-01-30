@@ -7,10 +7,12 @@ import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
+import CircularProgress from '@mui/material/CircularProgress';
 
 type IState = {
     label: string
-    type?: string
+    name?: string
+    type?: React.HTMLInputTypeAttribute
     optional?: boolean
     method?: (label: string) => any
     error?: (label: string) => boolean
@@ -18,19 +20,34 @@ type IState = {
     value?: any
 }
 
+type PickValue = any;
+// { [Key in keyof T]-?: T[Key] extends ValueType ? Key : never }[keyof T]
+
+
 declare global {
     interface Window {
         Confirm(text: string): Promise<Boolean>;
+        Loading(content: string | boolean): void;
         Alert(text: string, delay?: number): Promise<Boolean>;
-        Prompt(text: string, data: IState[]): Promise<string[]>;
+        Prompt<T extends IState>(text: string, data: T[]): Promise<T['name'] extends string ? PickValue : String[]>
     }
 }
 
-declare let resolveCallback: (value: Boolean | string[] | PromiseLike<Boolean | string[]>) => void
+// window.Prompt('teste', [
+//     { label: 'test', type: 'email', name: 'teste' }
+// ])
+// .then(data => {
+// data.name
+// })
+// .catch((e) => {
+//     e // false
+// })
+
+declare let resolveCallback: (value: Boolean | Object | PromiseLike<Boolean | Object>) => void
 declare let rejectCallback: (value: Boolean | PromiseLike<Boolean>) => void;
 
 const ReactMuiWindow: React.FC = () => {
-    const [type, setType] = React.useState('');
+    const [type, setType] = React.useState<"" | "PROMPT" | "ALERT" | "CONFIRM" | "LOADING">('');
     const [open, setOpen] = React.useState(false);
     const [text, setText] = React.useState('');
     const [promptinputs, setPromptInputs] = React.useState<IState[]>([]);
@@ -38,22 +55,24 @@ const ReactMuiWindow: React.FC = () => {
     const PROMPT = type === "PROMPT";
     const ALERT = type === "ALERT";
     const CONFIRM = type === "CONFIRM";
+    const LOADING = type === "LOADING";
 
 
     React.useEffect(() => {
         if (typeof window !== 'undefined') {
-            if (typeof window.Confirm === 'undefined') {
+            if (!window.Confirm) {
                 window.Confirm = (text) => {
                     setOpen(true)
                     setText(text)
                     setType("CONFIRM")
-                    return new Promise((res) => {
+                    return new Promise((res, rej) => {
                         resolveCallback = res;
+                        rejectCallback = rej;
                     })
                 }
             }
 
-            if (typeof window.Prompt === 'undefined') {
+            if (!window.Prompt) {
                 window.Prompt = (text, promptInput) => {
                     setOpen(true);
                     setText(text);
@@ -67,11 +86,11 @@ const ReactMuiWindow: React.FC = () => {
                 }
             }
 
-            if (typeof window.Alert === 'undefined') {
+            if (!window.Alert) {
                 window.Alert = (text, delay = 3000) => {
-                    setType("ALERT")
-                    setOpen(true)
-                    setText(text)
+                    setType("ALERT");
+                    setOpen(true);
+                    setText(text);
                     return new Promise((res) => {
                         resolveCallback = res;
                         setTimeout(() => {
@@ -80,13 +99,55 @@ const ReactMuiWindow: React.FC = () => {
                     })
                 }
             }
+
+            if (!window.Loading) {
+                window.Loading = (content) => {
+                    if (content) {
+                        setType("LOADING");
+                        setOpen(true);
+                        if (content && typeof content === 'string') {
+                            setText(content);
+                        }
+                    } else {
+                        closeConfirm();
+                    }
+                }
+            }
         }
 
     }, []);
 
     const onConfirm = () => {
-        if (PROMPT) resolveCallback(Object.values(promptinputs.map(e => e.value)))
-        else resolveCallback(true);
+        /**
+         * Prompt have inputs to fill
+         */
+        if (PROMPT) {
+            /**
+             * it will resolve with array with properties name
+             */
+            if (promptinputs?.[0]?.name) {
+                const response = {};
+                for (let index = 0; index < promptinputs.length; index++) {
+                    const iterator = promptinputs[index];
+                    if (iterator.name === undefined) {
+                        throw ("hey!! the form for '" + iterator.label + "' must have a property { name: 'propname' }")
+                    };
+                    response[iterator.name] = iterator.value;
+                }
+
+                resolveCallback(response);
+            } else {
+
+                resolveCallback(Object.values(promptinputs.map(e => e.value)))
+            }
+        }
+        /**
+         * this is a simple confirm
+         */
+        else {
+            resolveCallback(true)
+        };
+
         closeConfirm();
     };
 
@@ -120,9 +181,11 @@ const ReactMuiWindow: React.FC = () => {
                     boxShadow: 24,
                     p: { md: 4, xs: 2 },
                 }}>
-                    <Typography variant="subtitle1" component="h3">
-                        {text}
-                    </Typography>
+                    {!LOADING &&
+                        <Typography variant="subtitle1" component="h3">
+                            {text}
+                        </Typography>
+                    }
                     {PROMPT && <>
                         <Divider sx={{ margin: 2 }} />
                         <form onSubmit={(e) => { e.preventDefault(); return onConfirm() }}>
@@ -138,12 +201,12 @@ const ReactMuiWindow: React.FC = () => {
                                     label={input.label}
                                     value={input.value}
                                     type={input.type}
-                                    InputLabelProps={{
-                                        shrink: (input.type && input.type.indexOf('time') === -1) ? true : false
-                                    }}
+                                    InputLabelProps={(input.type && input.type.indexOf('time') === -1) ? {
+                                        shrink: true
+                                    } : {}}
                                     onChange={(e) => {
-                                        input.value = input.method ? input.method(e.target.value) : e.target.value
-                                        setPromptInputs(promptinputs);
+                                        input.value = input.method ? input.method(e.target.value) : e.target.value;
+                                        setPromptInputs([...promptinputs]);
                                     }}
                                 />
                             ))}
@@ -178,11 +241,27 @@ const ReactMuiWindow: React.FC = () => {
                             <Button sx={{ marginLeft: 'auto' }} onClick={onConfirm} >Ok</Button>
                         </Box>
                     </>}
+                    {LOADING && <>
+                        <Box sx={{ display: 'flex', justifyContent: text ? '' : 'center' }}>
+                            <Box sx={{p:1}}>
+                                <CircularProgress />
+                            </Box>
+                            <Box sx={{p:1, display: 'flex', alignItems: 'flex-start', flexDirection: 'column', justifyContent: 'center' }}>
+                                <Typography variant="subtitle2">
+                                    {text}
+                                </Typography>
+                                <Typography variant="caption">
+                                    {/* {text} */}
+                                </Typography>                           
+                            </Box>
+                        </Box>
+                    </>}
                 </Box>
             </Fade>
         </Modal>
     );
-    return component
+
+    return component;
     // return createPortal(component, document.getElementById('ReactMuiWindow'));
 };
 export default ReactMuiWindow;
