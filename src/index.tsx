@@ -26,7 +26,7 @@ type PickValue = any;
 
 declare global {
     interface Window {
-        Confirm(text: string): Promise<Boolean>;
+        Confirm(text: string, caption?: string): Promise<Boolean>;
         Loading(content: string | boolean): void;
         Alert(text: string, delay?: number): Promise<Boolean>;
         Prompt<T extends IState>(text: string, data: T[]): Promise<T['name'] extends string ? PickValue : String[]>
@@ -50,6 +50,7 @@ const ReactMuiWindow: React.FC = () => {
     const [type, setType] = React.useState<"" | "PROMPT" | "ALERT" | "CONFIRM" | "LOADING">('');
     const [open, setOpen] = React.useState(false);
     const [text, setText] = React.useState('');
+    const [caption, setCaption] = React.useState('');
     const [promptinputs, setPromptInputs] = React.useState<IState[]>([]);
 
     const PROMPT = type === "PROMPT";
@@ -101,10 +102,11 @@ const ReactMuiWindow: React.FC = () => {
             }
 
             if (!window.Loading) {
-                window.Loading = (content) => {
+                window.Loading = (content, caption = '') => {
                     if (content) {
                         setType("LOADING");
                         setOpen(true);
+                        setCaption(caption);
                         if (content && typeof content === 'string') {
                             setText(content);
                         }
@@ -251,7 +253,7 @@ const ReactMuiWindow: React.FC = () => {
                                     {text}
                                 </Typography>
                                 <Typography variant="caption">
-                                    {/* {text} */}
+                                    {caption}
                                 </Typography>                           
                             </Box>
                         </Box>

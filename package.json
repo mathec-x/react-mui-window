@@ -12,9 +12,9 @@
   "author": "",
   "license": "ISC",
   "peerDependencies": {
-    "@mui/material": "^5.3.1",
-    "react": "^16.8.0",
-    "react-dom": "^16.8.0"
+    "@mui/material": ">=5.0.x",
+    "react": ">16.0.0",
+    "react-dom": ">16.0.0"
   },
   "devDependencies": {
     "@mui/material": "^5.3.1",
