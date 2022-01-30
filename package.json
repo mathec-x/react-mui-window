@@ -8,6 +8,10 @@
     "build": "rollup -c",
     "start": "rollup -c -w"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mathec-x/react-mui-window"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",

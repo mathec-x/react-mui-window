@@ -16,7 +16,7 @@ npm i react-mui-window
 ## Promisses
 all functions are made with promises, so use .then() for 'ok' or .catch() for 'cancelers'
 
-### Confirm 
+### Alert 
 custom confirmation screen
 
 ``` js 
@@ -24,6 +24,20 @@ custom confirmation screen
         .then( response => {
             console.log(response); // true
     });
+```
+![prompt](./assets/alert.png)
+
+### Confirm 
+custom confirmation screen
+
+``` js 
+    window.Confirm("Tem certeza disso?") // timeout 5seg
+        .then( response => {
+            console.log(response); // true
+        })
+        .catch( response => {
+            console.log(response); // false
+        })
 ```
 
 ![prompt](./assets/confirm.png)
