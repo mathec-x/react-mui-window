@@ -184,7 +184,7 @@ const ReactMuiWindow: React.FC = () => {
                     p: { md: 4, xs: 2 },
                 }}>
                     {!LOADING &&
-                        <Typography variant="subtitle1" component="h3">
+                        <Typography variant="subtitle1" component="h3" color={theme => theme.palette.text.primary}>
                             {text}
                         </Typography>
                     }
