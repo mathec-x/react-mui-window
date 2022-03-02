@@ -18,6 +18,8 @@ type IState = {
     error?: (label: string) => boolean
     initialValue?: any
     value?: any
+    multiline?: boolean
+    rows?: number
 }
 
 type PickValue = any;
@@ -202,6 +204,8 @@ const ReactMuiWindow: React.FC = () => {
                                     error={(input.error) ? input.error(input.value) : false}
                                     label={input.label}
                                     value={input.value}
+                                    multiline={input.multiline}
+                                    rows={input.rows}
                                     type={input.type}
                                     InputLabelProps={(input.type && input.type.indexOf('time') === -1) ? {
                                         shrink: true
@@ -245,16 +249,16 @@ const ReactMuiWindow: React.FC = () => {
                     </>}
                     {LOADING && <>
                         <Box sx={{ display: 'flex', justifyContent: text ? '' : 'center' }}>
-                            <Box sx={{p:1}}>
+                            <Box sx={{ p: 1 }}>
                                 <CircularProgress />
                             </Box>
-                            <Box sx={{p:1, display: 'flex', alignItems: 'flex-start', flexDirection: 'column', justifyContent: 'center' }}>
+                            <Box sx={{ p: 1, display: 'flex', alignItems: 'flex-start', flexDirection: 'column', justifyContent: 'center' }}>
                                 <Typography variant="subtitle2">
                                     {text}
                                 </Typography>
                                 <Typography variant="caption">
                                     {caption}
-                                </Typography>                           
+                                </Typography>
                             </Box>
                         </Box>
                     </>}
