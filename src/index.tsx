@@ -8,6 +8,7 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import CircularProgress from '@mui/material/CircularProgress';
+import type { InputBaseProps } from '@mui/material/InputBase';
 
 type IState = {
     label: string
@@ -20,6 +21,7 @@ type IState = {
     value?: any
     multiline?: boolean
     rows?: number
+    props?: InputBaseProps['inputProps']
 }
 
 type PickValue = any;
@@ -167,6 +169,7 @@ const ReactMuiWindow: React.FC = () => {
             setPromptInputs([]);
         }, 150)
     };
+
     const component = (
         <Modal
             open={open}
@@ -177,13 +180,13 @@ const ReactMuiWindow: React.FC = () => {
             <Fade in={open}>
                 <Box sx={{
                     position: 'absolute',
-                    top: '10%',
-                    left: '50%',
-                    transform: 'translate(-50%, -10%)',
-                    width: { md: 400, xs: '85%' },
                     bgcolor: 'background.paper',
                     boxShadow: 24,
-                    p: { md: 4, xs: 2 },
+                    left: '50%',
+                    top: '5%',
+                    transform: 'translate(-50%, -5%)',
+                    width: { md: 400, xs: '90%' },
+                    p: { md: 4, xs: 2 }
                 }}>
                     {!LOADING &&
                         <Typography variant="subtitle1" component="h3" color={theme => theme.palette.text.primary}>
@@ -196,6 +199,7 @@ const ReactMuiWindow: React.FC = () => {
                             {promptinputs.map((input, index) => (
                                 <TextField
                                     fullWidth
+                                    inputProps={input.props}
                                     autoFocus={index === 0}
                                     key={`ReactMuiWindow-${input.label}`}
                                     margin="normal"
