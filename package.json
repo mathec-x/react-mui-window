@@ -17,7 +17,6 @@
   "license": "ISC",
   "peerDependencies": {
     "@mui/material": ">=5.0.x",
-    "react": ">16.0.0",
     "react-dom": ">16.0.0"
   },
   "devDependencies": {
@@ -26,7 +25,6 @@
     "@types/react-dom": "^17.0.11",
     "babel-core": "^6.26.3",
     "babel-runtime": "^6.26.0",
-    "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "rollup": "^2.66.1",
     "rollup-plugin-sass": "^1.2.10",

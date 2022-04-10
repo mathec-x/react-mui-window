@@ -21,7 +21,7 @@ type IState = {
     value?: any
     multiline?: boolean
     rows?: number
-    props?: InputBaseProps['inputProps']
+    inputProps?: InputBaseProps['inputProps']
 }
 
 type PickValue = any;
@@ -199,7 +199,7 @@ const ReactMuiWindow: React.FC = () => {
                             {promptinputs.map((input, index) => (
                                 <TextField
                                     fullWidth
-                                    inputProps={input.props}
+                                    inputProps={input.inputProps}
                                     autoFocus={index === 0}
                                     key={`ReactMuiWindow-${input.label}`}
                                     margin="normal"
